@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "test-chart.fullname" . }}
+  labels:
+  labels:
+    app.kubernetes.io/name: {{ include "test-chart.name" . }} 
+    helm.sh/chart: {{ include "test-chart.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }} 
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag  | default .Chart.AppVersion }}"
+        resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 12 }}
